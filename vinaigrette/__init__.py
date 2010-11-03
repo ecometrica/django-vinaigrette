@@ -1,4 +1,4 @@
-from django.db import models
+from django.db.models.signals import pre_save, post_save
 from django.utils.translation import ugettext, ugettext_lazy
 
 class VinaigretteError(Exception):
@@ -38,8 +38,8 @@ def register(model, fields, restrict_to=None, manager=None):
         setattr(model, field, VinaigretteDescriptor(field))
     model.untranslated = lambda self, fieldname: self.__dict__[fieldname]
     
-    models.signals.pre_save.connect(_vinaigrette_pre_save, sender=model)
-    models.signals.post_save.connect(_vinaigrette_post_save, sender=model)
+    pre_save.connect(_vinaigrette_pre_save, sender=model)
+    post_save.connect(_vinaigrette_post_save, sender=model)
 
 class VinaigretteDescriptor(object):
     
