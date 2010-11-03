@@ -1,9 +1,16 @@
+from django.db import models
 from django.utils.translation import ugettext, ugettext_lazy
 
 class VinaigretteError(Exception):
     pass
     
 _registry = {}
+
+def _vinaigrette_pre_save(sender, instance, **kwargs):
+    setattr(instance, '_vinaigrette_saving', True)
+    
+def _vinaigrette_post_save(sender, instance, **kwargs):
+    delattr(instance, '_vinaigrette_saving')
 
 def register(model, fields, restrict_to=None, manager=None):
     """Tell vinaigrette which fields on a Django model should be translated.
@@ -30,6 +37,9 @@ def register(model, fields, restrict_to=None, manager=None):
     for field in fields:
         setattr(model, field, VinaigretteDescriptor(field))
     model.untranslated = lambda self, fieldname: self.__dict__[fieldname]
+    
+    models.signals.pre_save.connect(_vinaigrette_pre_save, sender=model)
+    models.signals.post_save.connect(_vinaigrette_post_save, sender=model)
 
 class VinaigretteDescriptor(object):
     
@@ -39,6 +49,8 @@ class VinaigretteDescriptor(object):
     def __get__(self, obj, type=None):
         key = obj.__dict__[self.name]
         if not key:
+            return key
+        if getattr(obj, '_vinaigrette_saving', False):
             return key
         return ugettext(key)
 
