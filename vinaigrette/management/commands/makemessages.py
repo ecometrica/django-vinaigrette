@@ -1,0 +1,115 @@
+import codecs
+from optparse import make_option
+import os
+import re
+
+import vinaigrette
+
+from django.core.management.base import BaseCommand, CommandError
+from django.core.management.commands import makemessages as django_makemessages
+
+def _get_po_paths(locale=None):
+    """Returns paths to all relevant po files in the current project."""
+    basedirs = [os.path.join('conf', 'locale'), 'locale']
+    if os.environ.get('DJANGO_SETTINGS_MODULE'):
+        from django.conf import settings
+        basedirs.extend(settings.LOCALE_PATHS)
+
+    # Gather existing directories.
+    basedirs = set(map(os.path.abspath, filter(os.path.isdir, basedirs)))
+
+    if not basedirs:
+        raise CommandError("This script should be run from the Django SVN tree or your project or app tree, or with the settings module specified.")
+
+    po_paths = []
+    for basedir in basedirs:
+        if locale:
+            basedir = os.path.join(basedir, locale, 'LC_MESSAGES')
+        for dirpath, dirnames, filenames in os.walk(basedir):
+            for f in filenames:
+                if f.endswith('.po'):
+                    po_paths.append(os.path.join(dirpath, f))
+    return po_paths
+
+class Command(django_makemessages.Command):
+    
+    option_list = django_makemessages.Command.option_list + (
+        make_option('--no-vinaigrette', default=True, action='store_false', dest='avec-vinaigrette',
+            help="Don't include strings from database fields handled by vinaigrette."),
+    )
+    
+    help = "Runs over the entire source tree of the current directory and pulls out all strings marked for translation. It creates (or updates) a message file in the conf/locale (in the django tree) or locale (for project and application) directory. Also includes strings from database fields handled by vinaigrette."
+    requires_model_validation = True
+    
+    def handle(self, *args, **options):
+        if not options.get('avec-vinaigrette'):
+            return super(Command, self).handle(*args, **options)
+        
+        verbosity = int(options.get('verbosity'))
+        vinfilepath = 'vinaigrette-deleteme.py'
+        sources = ['', '']
+        
+        # Because Django makemessages isn't very extensible, we're writing a
+        # fake Python file, calling makemessages, then deleting it after.
+        vinfile = codecs.open(vinfilepath, 'w', encoding='utf8')
+        try:
+            vinfile.write('#coding:utf-8\n')
+            if verbosity > 0:
+                print 'Vinaigrette is processing database values...'
+            
+            for model in vinaigrette._registry:
+                strings_seen = set()
+                modelname = model._meta.object_name
+                reg = vinaigrette._registry[model]
+                fields = reg['fields']
+                manager = reg['manager'] if reg['manager'] else model._default_manager
+                qs = manager.filter(reg['restrict_to']) if reg['restrict_to'] \
+                    else manager.all()
+            
+                for instance in qs.values('pk', *fields):
+                    # In the reference comment in the po file, use the object's primary
+                    # key as the line number, but only if it's an integer primary key
+                    idnum = instance.pop('pk')
+                    idnum = idnum if isinstance(idnum, int) or idnum.isdigit() else 0
+                    for (fieldname, val) in instance.items():
+                        if val and val not in strings_seen:
+                            strings_seen.add(val)
+                            sources.append('%s/%s:%s' % (modelname, fieldname, idnum))
+                            vinfile.write('gettext(%r)\n' % val.replace('\r', ''))
+        finally:
+            vinfile.close()
+        
+        try:
+            super(Command, self).handle(*args, **options)
+        finally:
+            os.unlink(vinfilepath)
+        
+        r_lineref = re.compile(r'%s:(\d+)' % re.escape(vinfilepath))
+        def lineref_replace(match):
+            try:
+                return sources[int(match.group(1))]
+            except IndexError, ValueError:
+                return match.group(0)
+        
+        # The PO file has been generated. Now, swap out the line-number
+        # references to our fake python file for more descriptive
+        # references.
+        if options.get('all'):
+            po_paths = _get_po_paths()
+        else:
+            po_paths = _get_po_paths(options.get('locale'))
+        for po_path in po_paths:
+            po_file = open(po_path)
+            new_contents = []
+            for line in po_file:
+                if line.startswith('#: '):
+                    new_contents.append(r_lineref.sub(lineref_replace, line))
+                else:
+                    new_contents.append(line)
+            po_file.close()
+            # Perhaps this should be done a little more atomically w/ renames?
+            po_file = open(po_path, 'w')
+            for line in new_contents:
+                po_file.write(line)
+            po_file.close()
+        
