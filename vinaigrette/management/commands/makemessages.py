@@ -10,6 +10,7 @@ import vinaigrette
 
 from django.core.management.base import BaseCommand, CommandError
 from django.core.management.commands import makemessages as django_makemessages
+from django.utils.translation import ugettext
 
 def _get_po_paths(locale=None):
     """Returns paths to all relevant po files in the current project."""
@@ -39,6 +40,8 @@ class Command(django_makemessages.Command):
     option_list = django_makemessages.Command.option_list + (
         make_option('--no-vinaigrette', default=True, action='store_false', dest='avec-vinaigrette',
             help="Don't include strings from database fields handled by vinaigrette."),
+        make_option('--keep-obsolete', default=False, action='store_true', dest='keep-obsolete',
+            help="Don't obsolete strings no longer referenced in code or Viniagrette's fields.")
     )
     
     help = "Runs over the entire source tree of the current directory and pulls out all strings marked for translation. It creates (or updates) a message file in the conf/locale (in the django tree) or locale (for project and application) directory. Also includes strings from database fields handled by vinaigrette."
@@ -101,6 +104,12 @@ class Command(django_makemessages.Command):
             po_paths = _get_po_paths()
         else:
             po_paths = _get_po_paths(options.get('locale'))
+            
+        if options.get('keep-obsolete'):
+            obsolete_warning = ['#. %s\n' % 
+                ugettext('Obsolete translation kept alive with Viniagrette').encode('utf8'),
+                '#: obsolete:0\n']
+        
         for po_path in po_paths:
             po_file = open(po_path)
             new_contents = []
@@ -108,11 +117,20 @@ class Command(django_makemessages.Command):
                 if line.startswith('#: '):
                     new_contents.append(r_lineref.sub(lineref_replace, line))
                 else:
+                    if options.get('keep-obsolete'):
+                        if line in obsolete_warning:
+                            # Don't preserve old obsolete warnings we inserted
+                            continue
+                        if line.startswith('#~ msgid '):
+                            new_contents.extend(obsolete_warning)
+                        if line.startswith('#~ '):
+                            line = re.sub(r'^#~ ', '', line)
+                    
                     new_contents.append(line)
             po_file.close()
+            
             # Perhaps this should be done a little more atomically w/ renames?
             po_file = open(po_path, 'w')
             for line in new_contents:
                 po_file.write(line)
             po_file.close()
-        
