@@ -1,3 +1,6 @@
+# Copyright (c) Ecometrica. All rights reserved.
+# Distributed under the BSD license. See LICENSE for details.
+
 import codecs
 from optparse import make_option
 import os

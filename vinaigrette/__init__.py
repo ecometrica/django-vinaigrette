@@ -1,3 +1,6 @@
+# Copyright (c) Ecometrica. All rights reserved.
+# Distributed under the BSD license. See LICENSE for details.
+
 from django.db.models.signals import pre_save, post_save
 from django.utils.translation import ugettext, ugettext_lazy
 
