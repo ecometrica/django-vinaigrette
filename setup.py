@@ -1,5 +1,5 @@
 import os
-from setuptools import setup
+from setuptools import setup, find_packages
 
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
@@ -7,7 +7,7 @@ def read(fname):
 setup(
     name = "django-vinaigrette",
     version = "0.1.0",
-    packages = ['vinaigrette'],
+    packages = find_packages(),
     description = "Translate Django model data using gettext",
     author = "Ecometrica",
     author_email = "info@ecometrica.ca",
@@ -24,7 +24,6 @@ setup(
         "Operating System :: POSIX",
         "Topic :: Software Development :: Internationalization",
         "Framework :: Django",
-        "Framework :: Django :: 1.2",
         ],
     long_description = read('README.rst'),
 )

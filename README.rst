@@ -45,6 +45,9 @@ Vinaigrette is designed for database content that is:
 - always edited in the default language
 - edited by site administrators, not users
 
+Only model instances are translated. Data accessed via the Django QuerySet ``values`` method will
+not be translated.
+
 In general, when a field is accessed, it will always return the translated version, if one exists.
 However, if a value is set, the exact value entered (and not the translated version) should be saved
 to the database. For example:
