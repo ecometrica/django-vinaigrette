@@ -63,7 +63,8 @@ class Command(django_makemessages.Command):
             if verbosity > 0:
                 print 'Vinaigrette is processing database values...'
             
-            for model in vinaigrette._registry:
+            for model in sorted(vinaigrette._registry.keys(),
+              key=lambda m: m._meta.object_name):
                 strings_seen = set()
                 modelname = model._meta.object_name
                 reg = vinaigrette._registry[model]
@@ -72,7 +73,7 @@ class Command(django_makemessages.Command):
                 qs = manager.filter(reg['restrict_to']) if reg['restrict_to'] \
                     else manager.all()
             
-                for instance in qs.values('pk', *fields):
+                for instance in qs.order_by('pk').values('pk', *fields):
                     # In the reference comment in the po file, use the object's primary
                     # key as the line number, but only if it's an integer primary key
                     idnum = instance.pop('pk')
