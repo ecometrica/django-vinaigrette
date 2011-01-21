@@ -50,7 +50,10 @@ class VinaigretteDescriptor(object):
         self.name = name
 
     def __get__(self, obj, type=None):
-        key = obj.__dict__[self.name]
+        if obj:
+            key = obj.__dict__[self.name]
+        else:
+            return object.__getattribute__(type, self.name)
         if not key:
             return key
         if getattr(obj, '_vinaigrette_saving', False):
