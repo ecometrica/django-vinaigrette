@@ -77,7 +77,7 @@ class Command(django_makemessages.Command):
                     # In the reference comment in the po file, use the object's primary
                     # key as the line number, but only if it's an integer primary key
                     idnum = instance.pop('pk')
-                    idnum = idnum if isinstance(idnum, int) or idnum.isdigit() else 0
+                    idnum = idnum if isinstance(idnum, (int, long)) or idnum.isdigit() else 0
                     for (fieldname, val) in instance.items():
                         if val and val not in strings_seen:
                             strings_seen.add(val)
