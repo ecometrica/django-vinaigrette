@@ -82,7 +82,10 @@ class Command(django_makemessages.Command):
                         if val and val not in strings_seen:
                             strings_seen.add(val)
                             sources.append('%s/%s:%s' % (modelname, fieldname, idnum))
-                            vinfile.write('gettext(%r)\n' % val.replace('\r', ''))
+                            vinfile.write(
+                                'gettext(%r)\n' 
+                                % val.replace('\r', '').replace('%', '%%')
+                            )
         finally:
             vinfile.close()
         
