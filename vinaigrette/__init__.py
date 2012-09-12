@@ -1,6 +1,8 @@
 # Copyright (c) Ecometrica. All rights reserved.
 # Distributed under the BSD license. See LICENSE for details.
 
+import re
+
 from django.db.models.signals import pre_save, post_save
 from django.utils.translation import ugettext, ugettext_lazy
 
@@ -8,6 +10,8 @@ class VinaigretteError(Exception):
     pass
     
 _registry = {}
+
+DOUBLE_PERCENTAGE_RE = re.compile(u'%(?!\()')
 
 def _vinaigrette_pre_save(sender, instance, **kwargs):
     setattr(instance, '_vinaigrette_saving', True)
@@ -58,7 +62,10 @@ class VinaigretteDescriptor(object):
             return key
         if getattr(obj, '_vinaigrette_saving', False):
             return key
-        return ugettext(key)
+
+        # We double over all the keys to mimic how {% trans %} works
+        key = DOUBLE_PERCENTAGE_RE.sub(u'%%', key)
+        return ugettext(key).replace('%%', '%')
 
     def __set__(self, obj, value):
         obj.__dict__[self.name] = value
