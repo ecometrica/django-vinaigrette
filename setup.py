@@ -1,20 +1,24 @@
 import os
 from setuptools import setup, find_packages
 
-def read(fname):
-    return open(os.path.join(os.path.dirname(__file__), fname)).read()
-    
+description = "Translate Django model data using gettext"
+cur_dir = os.path.dirname(__file__)
+try:
+    long_description = open(os.path.join(cur_dir, 'README.rst')).read()
+except:
+    long_description = description
+
 setup(
     name = "django-vinaigrette",
-    version = "0.1.0",
+    version = "0.1.1",
     packages = find_packages(),
-    description = "Translate Django model data using gettext",
+    description = description,
     author = "Ecometrica",
     author_email = "info@ecometrica.ca",
     maintainer = "Michael Mulley",
     maintainer_email = "michael@michaelmulley.com",
     url = "http://github.com/ecometrica/django-vinaigrette/",
-    keywords = ["django", "translation", "gettext", 
+    keywords = ["django", "translation", "gettext",
         "internationalization", "i18n", "database", "model"],
     classifiers = [
         "Programming Language :: Python",
@@ -25,5 +29,5 @@ setup(
         "Topic :: Software Development :: Internationalization",
         "Framework :: Django",
         ],
-    long_description = read('README.rst'),
+    long_description = long_description,
 )
