@@ -12,7 +12,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core.management.commands import makemessages as django_makemessages
 from django.utils.translation import ugettext
 
-def _get_po_paths(locale=None):
+def _get_po_paths(locales=None):
     """Returns paths to all relevant po files in the current project."""
     basedirs = [os.path.join('conf', 'locale'), 'locale']
     if os.environ.get('DJANGO_SETTINGS_MODULE'):
@@ -27,12 +27,12 @@ def _get_po_paths(locale=None):
 
     po_paths = []
     for basedir in basedirs:
-        if locale:
-            basedir = os.path.join(basedir, locale, 'LC_MESSAGES')
-        for dirpath, dirnames, filenames in os.walk(basedir):
-            for f in filenames:
-                if f.endswith('.po'):
-                    po_paths.append(os.path.join(dirpath, f))
+        for locale in locales:
+            basedir_locale = os.path.join(basedir, locale, 'LC_MESSAGES')
+            for dirpath, dirnames, filenames in os.walk(basedir_locale):
+                for f in filenames:
+                    if f.endswith('.po'):
+                        po_paths.append(os.path.join(dirpath, f))
     return po_paths
 
 class Command(django_makemessages.Command):
@@ -107,7 +107,14 @@ class Command(django_makemessages.Command):
         if options.get('all'):
             po_paths = _get_po_paths()
         else:
-            po_paths = _get_po_paths(options.get('locale'))
+            locales = options.get('locale')
+
+            # In django 1.6+ one or more locales can be specified, so we
+            # make sure to handle both versions here.
+            if isinstance(locales, basestring):
+                locales = [locales]
+
+            po_paths = _get_po_paths(locales)
             
         if options.get('keep-obsolete'):
             obsolete_warning = ['#. %s\n' % 
