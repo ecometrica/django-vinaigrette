@@ -12,7 +12,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core.management.commands import makemessages as django_makemessages
 from django.utils.translation import ugettext
 
-def _get_po_paths(locales=None):
+def _get_po_paths(locales=[]):
     """Returns paths to all relevant po files in the current project."""
     basedirs = [os.path.join('conf', 'locale'), 'locale']
     if os.environ.get('DJANGO_SETTINGS_MODULE'):
