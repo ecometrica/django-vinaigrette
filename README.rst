@@ -30,7 +30,6 @@ be the string translated into the appropriate language::
     >>> i.name
     u'Laitue'
     
-=========
 Et cetera
 =========
 
@@ -63,3 +62,25 @@ to the database. For example:
     >>> i.save()
     >>> Ingredient.objects.get(name='Cabbage').name
     u'Chou'
+
+Help! The Admin is messing up all the vinaigrette fields whenever I save changes!
+---------------------------------------------------------------------------------
+
+Use `vinaigrette.VinaigrettteAdminLanguageMiddleware` to force the admin to
+always use the main language, and not have vinaigrette mess with your
+change views.
+
+=============
+Release Notes
+=============
+
+0.1.3
+-----
+
+* Support for Django 1.6.
+
+0.2.0
+-----
+
+* New VinaigrettteAdminLanguageMiddleware middleware.
+* Bug fix for the --all option, it now works again.
