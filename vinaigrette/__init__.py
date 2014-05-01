@@ -88,7 +88,6 @@ class VinaigrettteAdminLanguageMiddleware(object):
         return request.path.startswith(reverse('admin:index'))
 
     def process_request(self, request):
-        print("***** RORY: path: %r admin: %r" % ( request.path, reverse('admin:index')))
         if not self.is_admin_request(request):
             return None
 
