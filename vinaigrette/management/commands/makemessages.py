@@ -1,6 +1,6 @@
 # Copyright (c) Ecometrica. All rights reserved.
 # Distributed under the BSD license. See LICENSE for details.
-
+from __future__ import print_function
 import codecs
 from optparse import make_option
 import os
@@ -61,7 +61,7 @@ class Command(django_makemessages.Command):
         try:
             vinfile.write('#coding:utf-8\n')
             if verbosity > 0:
-                print 'Vinaigrette is processing database values...'
+                print('Vinaigrette is processing database values...')
             
             for model in sorted(vinaigrette._registry.keys(),
               key=lambda m: m._meta.object_name):
@@ -77,7 +77,10 @@ class Command(django_makemessages.Command):
                     # In the reference comment in the po file, use the object's primary
                     # key as the line number, but only if it's an integer primary key
                     idnum = instance.pop('pk')
-                    idnum = idnum if isinstance(idnum, (int, long)) or idnum.isdigit() else 0
+                    try:
+                        idnum = int(idnum)
+                    except (ValueError, TypeError):
+                        idnum = 0
                     for (fieldname, val) in instance.items():
                         if val and val not in strings_seen:
                             strings_seen.add(val)
@@ -98,7 +101,7 @@ class Command(django_makemessages.Command):
         def lineref_replace(match):
             try:
                 return sources[int(match.group(1))]
-            except IndexError, ValueError:
+            except (IndexError, ValueError):
                 return match.group(0)
         
         # The PO file has been generated. Now, swap out the line-number
@@ -111,7 +114,7 @@ class Command(django_makemessages.Command):
 
             # In django 1.6+ one or more locales can be specified, so we
             # make sure to handle both versions here.
-            if isinstance(locales, basestring):
+            if isinstance(locales, str):
                 locales = [locales]
 
             po_paths = _get_po_paths(locales)
