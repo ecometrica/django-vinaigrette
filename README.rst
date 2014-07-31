@@ -84,3 +84,8 @@ Release Notes
 
 * New VinaigrettteAdminLanguageMiddleware middleware.
 * Bug fix for the --all option, it now works again.
+
+0.3.0
+-----
+
+* Support for python 3.3.

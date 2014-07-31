@@ -10,7 +10,7 @@ except:
 
 setup(
     name = "django-vinaigrette",
-    version = "0.2.1",
+    version = "0.3.0",
     packages = find_packages(),
     description = description,
     author = "Ecometrica",
@@ -23,6 +23,8 @@ setup(
     classifiers = [
         "Programming Language :: Python",
         "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.3",
         "Development Status :: 4 - Beta",
         "License :: OSI Approved :: BSD License",
         "Operating System :: POSIX",
