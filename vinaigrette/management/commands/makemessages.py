@@ -114,7 +114,11 @@ class Command(django_makemessages.Command):
 
             # In django 1.6+ one or more locales can be specified, so we
             # make sure to handle both versions here.
-            if isinstance(locales, str):
+
+            # Also, there is no simple way to differentiate a string from a
+            # sequence of strings that works in both python2 (for str and
+            # unicode) and python3 so we query for a string method on locales.
+            if hasattr(locales, 'capitalize'):
                 locales = [locales]
 
             po_paths = _get_po_paths(locales)
