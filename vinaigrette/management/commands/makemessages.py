@@ -5,12 +5,15 @@ import codecs
 from optparse import make_option
 import os
 import re
+import django
 
 import vinaigrette
 
 from django.core.management.base import BaseCommand, CommandError
 from django.core.management.commands import makemessages as django_makemessages
 from django.utils.translation import ugettext
+
+from distutils.version import LooseVersion # To compare django_versions strings
 
 def _get_po_paths(locales=[]):
     """Returns paths to all relevant po files in the current project."""
@@ -45,7 +48,12 @@ class Command(django_makemessages.Command):
     )
     
     help = "Runs over the entire source tree of the current directory and pulls out all strings marked for translation. It creates (or updates) a message file in the conf/locale (in the django tree) or locale (for project and application) directory. Also includes strings from database fields handled by vinaigrette."
-    requires_model_validation = True
+    
+    # Note that LooseVersion and StrictVersion have been deprecated under PEP 386 and will at some point be replaced by NormalizedVersion    
+    if LooseVersion(django.get_version()) < LooseVersion("1.7"):
+        requires_model_validation = True
+    else:
+        requires_system_checks = True
     
     def handle(self, *args, **options):
         if not options.get('avec-vinaigrette'):
