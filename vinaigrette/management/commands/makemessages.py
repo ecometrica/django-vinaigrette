@@ -15,7 +15,6 @@ from django.utils.translation import ugettext
 
 from distutils.version import LooseVersion # To compare django_versions strings
 
-
 def _get_po_paths(locales=[]):
     """Returns paths to all relevant po files in the current project."""
     basedirs = [os.path.join('conf', 'locale'), 'locale']
@@ -38,8 +37,6 @@ def _get_po_paths(locales=[]):
                     if f.endswith('.po'):
                         po_paths.append(os.path.join(dirpath, f))
     return po_paths
-
-
 
 class Command(django_makemessages.Command):
     
