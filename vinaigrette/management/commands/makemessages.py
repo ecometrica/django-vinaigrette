@@ -11,6 +11,7 @@ import vinaigrette
 from django.core.management.base import BaseCommand, CommandError
 from django.core.management.commands import makemessages as django_makemessages
 from django.utils.translation import ugettext
+from django import get_version
 
 def _get_po_paths(locales=[]):
     """Returns paths to all relevant po files in the current project."""
@@ -45,7 +46,7 @@ class Command(django_makemessages.Command):
     )
     
     help = "Runs over the entire source tree of the current directory and pulls out all strings marked for translation. It creates (or updates) a message file in the conf/locale (in the django tree) or locale (for project and application) directory. Also includes strings from database fields handled by vinaigrette."
-    if django.get_version() >= 1.7:
+    if get_version() >= 1.7:
         requires_system_checks = True
     else:
         requires_model_validation = True
