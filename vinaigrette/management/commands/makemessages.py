@@ -72,7 +72,7 @@ class Command(django_makemessages.Command):
             for model in sorted(vinaigrette._registry.keys(),
               key=lambda m: m._meta.object_name):
                 strings_seen = set()
-                modelname = model._meta.object_name
+                modelname = "%s.%s" % (model._meta.app_label, model._meta.object_name)
                 reg = vinaigrette._registry[model]
                 fields = reg['fields']
                 properties = reg['properties']
