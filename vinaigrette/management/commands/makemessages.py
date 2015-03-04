@@ -67,7 +67,7 @@ class Command(django_makemessages.Command):
         try:
             vinfile.write('#coding:utf-8\n')
             if verbosity > 0:
-                print('Vinaigrette is processing database values...')
+                self.stdout.write('Vinaigrette is processing database values...')
             
             for model in sorted(vinaigrette._registry.keys(),
               key=lambda m: m._meta.object_name):
