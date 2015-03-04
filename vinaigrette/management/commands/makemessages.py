@@ -46,6 +46,8 @@ class Command(django_makemessages.Command):
     )
     
     help = "Runs over the entire source tree of the current directory and pulls out all strings marked for translation. It creates (or updates) a message file in the conf/locale (in the django tree) or locale (for project and application) directory. Also includes strings from database fields handled by vinaigrette."
+    
+    # requires_model_validation deprecated since Django 1.7, replaced by requires_system_checks
     if django.VERSION < (1, 7):
         requires_model_validation = True
     else:
