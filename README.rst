@@ -89,3 +89,8 @@ Release Notes
 -----
 
 * Support for python 3.3.
+
+0.4.0
+-----
+
+* Support for Django 1.7
