@@ -73,11 +73,16 @@ class Command(django_makemessages.Command):
                 strings_seen = set()
                 modelname = "%s.%s" % (model._meta.app_label, model._meta.object_name)
                 reg = vinaigrette._registry[model]
-                fields = reg['fields']
+                fields = reg['fields'] # strings to be translated
                 properties = reg['properties']
                 # make query_fields a set to avoid duplicates
+                # only these fields will be retrieved from the db instead of all model's field
                 query_fields = set(fields)
+
+                # if there are properties, we update the needed query fields and
+                # update the string that will be translated
                 if properties:
+                   fields += properties.keys()
                    for prop in properties.itervalues():
                        query_fields |= set(prop)
 
@@ -85,14 +90,14 @@ class Command(django_makemessages.Command):
                 qs = manager.filter(reg['restrict_to']) if reg['restrict_to'] else manager.all()
 
                 for instance in qs.order_by('pk').only('pk', *query_fields):
-                    # iterate over "single" fields
+                    try:
+                        idnum = int(instance.pk)
+                    except (ValueError, TypeError):
+                        idnum = 0
+                    # iterate over fields to translate
                     for field in fields:
                         # In the reference comment in the po file, use the object's primary
                         # key as the line number, but only if it's an integer primary key
-                        try:
-                            idnum = int(instance.pk)
-                        except (ValueError, TypeError):
-                            idnum = 0
                         val = getattr(instance, field)
                         if val and val not in strings_seen:
                             strings_seen.add(val)
@@ -101,17 +106,6 @@ class Command(django_makemessages.Command):
                                 'gettext(%r)\n'
                                 % val.replace('\r', '').replace('%', '%%')
                             )
-                    # iterate over properies if they exist
-                    if properties:
-                        for prop in properties.iterkeys():
-                            val = getattr(instance, prop)
-                            if val and val not in strings_seen:
-                                strings_seen.add(val)
-                                sources.append('%s/%s:%s' % (modelname, prop, idnum))
-                                vinfile.write(
-                                    'gettext(%r)\n'
-                                    % val.replace('\r', '').replace('%', '%%')
-                                )
 
         finally:
             vinfile.close()
