@@ -38,12 +38,20 @@ def _get_po_paths(locales=[]):
 
 class Command(django_makemessages.Command):
     
-    option_list = django_makemessages.Command.option_list + (
-        make_option('--no-vinaigrette', default=True, action='store_false', dest='avec-vinaigrette',
-            help="Don't include strings from database fields handled by vinaigrette."),
-        make_option('--keep-obsolete', default=False, action='store_true', dest='keep-obsolete',
-            help="Don't obsolete strings no longer referenced in code or Viniagrette's fields.")
-    )
+    if django.VERSION < (1, 8):
+        option_list = django_makemessages.Command.option_list + (
+            make_option('--no-vinaigrette', default=True, action='store_false', dest='avec-vinaigrette',
+                help="Don't include strings from database fields handled by vinaigrette."),
+            make_option('--keep-obsolete', default=False, action='store_true', dest='keep-obsolete',
+                help="Don't obsolete strings no longer referenced in code or Viniagrette's fields.")
+        )
+    else:
+        def add_arguments(self, parser):
+            super(self.__class__, self).add_arguments(parser)
+            parser.add_argument('--no-vinaigrette', default=True, action='store_false', dest='avec-vinaigrette',
+                help="Don't include strings from database fields handled by vinaigrette."),
+            parser.add_argument('--keep-obsolete', default=False, action='store_true', dest='keep-obsolete',
+                help="Don't obsolete strings no longer referenced in code or Viniagrette's fields.")
     
     help = "Runs over the entire source tree of the current directory and pulls out all strings marked for translation. It creates (or updates) a message file in the conf/locale (in the django tree) or locale (for project and application) directory. Also includes strings from database fields handled by vinaigrette."
     
