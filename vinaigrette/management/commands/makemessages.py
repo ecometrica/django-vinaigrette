@@ -84,7 +84,7 @@ class Command(django_makemessages.Command):
                 if properties:
                    fields += properties.keys()
                    for prop in properties.itervalues():
-                       query_fields |= set(prop)
+                       query_fields.update(prop)
 
                 manager = reg['manager'] if reg['manager'] else model._default_manager
                 qs = manager.filter(reg['restrict_to']) if reg['restrict_to'] else manager.all()
