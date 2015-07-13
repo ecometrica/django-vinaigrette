@@ -94,3 +94,8 @@ Release Notes
 -----
 
 * Support for Django 1.7
+
+0.5.0
+-----
+
+* Can specify properties to use instead of database field names in .register() function.
