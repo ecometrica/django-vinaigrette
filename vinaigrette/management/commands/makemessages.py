@@ -37,14 +37,14 @@ def _get_po_paths(locales=[]):
     return po_paths
 
 class Command(django_makemessages.Command):
-    
+
     option_list = django_makemessages.Command.option_list + (
         make_option('--no-vinaigrette', default=True, action='store_false', dest='avec-vinaigrette',
             help="Don't include strings from database fields handled by vinaigrette."),
         make_option('--keep-obsolete', default=False, action='store_true', dest='keep-obsolete',
             help="Don't obsolete strings no longer referenced in code or Viniagrette's fields.")
     )
-    
+
     help = "Runs over the entire source tree of the current directory and pulls out all strings marked for translation. It creates (or updates) a message file in the conf/locale (in the django tree) or locale (for project and application) directory. Also includes strings from database fields handled by vinaigrette."
     
     # requires_model_validation deprecated since Django 1.7, replaced by requires_system_checks
@@ -56,11 +56,11 @@ class Command(django_makemessages.Command):
     def handle(self, *args, **options):
         if not options.get('avec-vinaigrette'):
             return super(Command, self).handle(*args, **options)
-        
+
         verbosity = int(options.get('verbosity'))
         vinfilepath = 'vinaigrette-deleteme.py'
         sources = ['', '']
-        
+
         # Because Django makemessages isn't very extensible, we're writing a
         # fake Python file, calling makemessages, then deleting it after.
         vinfile = codecs.open(vinfilepath, 'w', encoding='utf8')
@@ -69,47 +69,59 @@ class Command(django_makemessages.Command):
             if verbosity > 0:
                 self.stdout.write('Vinaigrette is processing database values...')
             
-            for model in sorted(vinaigrette._registry.keys(),
-              key=lambda m: m._meta.object_name):
+            for model in sorted(vinaigrette._registry.keys(), key=lambda m: m._meta.object_name):
                 strings_seen = set()
-                modelname = model._meta.object_name
+                modelname = "%s.%s" % (model._meta.app_label, model._meta.object_name)
                 reg = vinaigrette._registry[model]
-                fields = reg['fields']
+                fields = reg['fields'] # strings to be translated
+                properties = reg['properties']
+                # make query_fields a set to avoid duplicates
+                # only these fields will be retrieved from the db instead of all model's field
+                query_fields = set(fields)
+
+                # if there are properties, we update the needed query fields and
+                # update the string that will be translated
+                if properties:
+                   fields += properties.keys()
+                   for prop in properties.itervalues():
+                       query_fields.update(prop)
+
                 manager = reg['manager'] if reg['manager'] else model._default_manager
-                qs = manager.filter(reg['restrict_to']) if reg['restrict_to'] \
-                    else manager.all()
-            
-                for instance in qs.order_by('pk').values('pk', *fields):
-                    # In the reference comment in the po file, use the object's primary
-                    # key as the line number, but only if it's an integer primary key
-                    idnum = instance.pop('pk')
+                qs = manager.filter(reg['restrict_to']) if reg['restrict_to'] else manager.all()
+
+                for instance in qs.order_by('pk').only('pk', *query_fields):
                     try:
-                        idnum = int(idnum)
+                        idnum = int(instance.pk)
                     except (ValueError, TypeError):
                         idnum = 0
-                    for (fieldname, val) in instance.items():
+                    # iterate over fields to translate
+                    for field in fields:
+                        # In the reference comment in the po file, use the object's primary
+                        # key as the line number, but only if it's an integer primary key
+                        val = getattr(instance, field)
                         if val and val not in strings_seen:
                             strings_seen.add(val)
-                            sources.append('%s/%s:%s' % (modelname, fieldname, idnum))
+                            sources.append('%s/%s:%s' % (modelname, field, idnum))
                             vinfile.write(
-                                'gettext(%r)\n' 
+                                'gettext(%r)\n'
                                 % val.replace('\r', '').replace('%', '%%')
                             )
+
         finally:
             vinfile.close()
-        
+
         try:
             super(Command, self).handle(*args, **options)
         finally:
             os.unlink(vinfilepath)
-        
+
         r_lineref = re.compile(r'%s:(\d+)' % re.escape(vinfilepath))
         def lineref_replace(match):
             try:
                 return sources[int(match.group(1))]
             except (IndexError, ValueError):
                 return match.group(0)
-        
+
         # The PO file has been generated. Now, swap out the line-number
         # references to our fake python file for more descriptive
         # references.
@@ -128,12 +140,12 @@ class Command(django_makemessages.Command):
                 locales = [locales]
 
             po_paths = _get_po_paths(locales)
-            
+
         if options.get('keep-obsolete'):
-            obsolete_warning = ['#. %s\n' % 
+            obsolete_warning = ['#. %s\n' %
                 ugettext('Obsolete translation kept alive with Viniagrette').encode('utf8'),
                 '#: obsolete:0\n']
-        
+
         for po_path in po_paths:
             po_file = open(po_path)
             new_contents = []
@@ -156,11 +168,11 @@ class Command(django_makemessages.Command):
                             new_contents.extend(obsolete_warning)
                         if line.startswith('#~ '):
                             line = re.sub(r'^#~ ', '', line)
-                    
+
                     new_contents.append(line)
                 lastline = line
             po_file.close()
-            
+
             # Perhaps this should be done a little more atomically w/ renames?
             po_file = open(po_path, 'w')
             for line in new_contents:
