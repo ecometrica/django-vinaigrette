@@ -99,3 +99,8 @@ Release Notes
 -----
 
 * Can specify properties to use instead of database field names in .register() function.
+
+0.6.0
+-----
+
+* Support for Django 1.8
