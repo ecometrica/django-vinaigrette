@@ -8,7 +8,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext, ugettext_lazy, activate, get_language
 
-VERSION = "0.5.0"
+VERSION = "0.6.0"
 
 class VinaigretteError(Exception):
     pass
