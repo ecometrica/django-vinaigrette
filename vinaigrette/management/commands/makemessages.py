@@ -45,7 +45,9 @@ class Command(django_makemessages.Command):
           make_option('--no-vinaigrette', default=True, action='store_false', dest='avec-vinaigrette',
               help="Don't include strings from database fields handled by vinaigrette."),
           make_option('--keep-obsolete', default=False, action='store_true', dest='keep-obsolete',
-              help="Don't obsolete strings no longer referenced in code or Viniagrette's fields.")
+              help="Don't obsolete strings no longer referenced in code or Viniagrette's fields."),
+          make_option('--keep-vinaigrette-temp', default=False, action='store_true', dest='keep-vinaigrette-temp',
+              help="Keep the temporary vinaigrette-deleteme.py file."),
       )
     else: # for Django 1.8+
       def add_arguments(self, parser):
@@ -54,6 +56,8 @@ class Command(django_makemessages.Command):
               help="Don't include strings from database fields handled by vinaigrette."),
           parser.add_argument('--keep-obsolete', default=False, action='store_true', dest='keep-obsolete',
               help="Don't obsolete strings no longer referenced in code or Viniagrette's fields.")
+          parser.add_argument('--keep-vinaigrette-temp', default=False, action='store_true', dest='keep-vinaigrette-temp',
+              help="Keep the temporary vinaigrette-deleteme.py file.")
 
     help = "Runs over the entire source tree of the current directory and pulls out all strings marked for translation. It creates (or updates) a message file in the conf/locale (in the django tree) or locale (for project and application) directory. Also includes strings from database fields handled by vinaigrette."
     
@@ -123,7 +127,8 @@ class Command(django_makemessages.Command):
         try:
             super(Command, self).handle(*args, **options)
         finally:
-            os.unlink(vinfilepath)
+            if not options.get('keep-vinaigrette-temp'):
+                os.unlink(vinfilepath)
 
         r_lineref = re.compile(r'%s:(\d+)' % re.escape(vinfilepath))
         def lineref_replace(match):
