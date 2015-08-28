@@ -38,12 +38,22 @@ def _get_po_paths(locales=[]):
 
 class Command(django_makemessages.Command):
 
-    option_list = django_makemessages.Command.option_list + (
-        make_option('--no-vinaigrette', default=True, action='store_false', dest='avec-vinaigrette',
-            help="Don't include strings from database fields handled by vinaigrette."),
-        make_option('--keep-obsolete', default=False, action='store_true', dest='keep-obsolete',
-            help="Don't obsolete strings no longer referenced in code or Viniagrette's fields.")
-    )
+    # NOTE: I'm not sure if this "if" statement is the best way to support both 1.7 (optparse) and 1.8 (argparse).  Feel free to change it in the repo if you know a better way.
+    # options list
+    if django.VERSION <= (1, 7):  # for Django 1.7 and less
+      option_list = django_makemessages.Command.option_list + (
+          make_option('--no-vinaigrette', default=True, action='store_false', dest='avec-vinaigrette',
+              help="Don't include strings from database fields handled by vinaigrette."),
+          make_option('--keep-obsolete', default=False, action='store_true', dest='keep-obsolete',
+              help="Don't obsolete strings no longer referenced in code or Viniagrette's fields.")
+      )
+    else: # for Django 1.8+
+      def add_arguments(self, parser):
+          super().add_arguments(parser)
+          parser.add_argument('--no-vinaigrette', default=True, action='store_false', dest='avec-vinaigrette',
+              help="Don't include strings from database fields handled by vinaigrette."),
+          parser.add_argument('--keep-obsolete', default=False, action='store_true', dest='keep-obsolete',
+              help="Don't obsolete strings no longer referenced in code or Viniagrette's fields.")
 
     help = "Runs over the entire source tree of the current directory and pulls out all strings marked for translation. It creates (or updates) a message file in the conf/locale (in the django tree) or locale (for project and application) directory. Also includes strings from database fields handled by vinaigrette."
     
