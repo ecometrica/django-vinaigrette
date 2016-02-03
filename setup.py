@@ -10,11 +10,11 @@ except:
 
 setup(
     name = "django-vinaigrette",
-    version = "0.5.0",
+    version = "1.0.0",
     packages = find_packages(),
     description = description,
     author = "Ecometrica",
-    author_email = "info@ecometrica.ca",
+    author_email = "dev@ecometrica.com",
     maintainer = "Rory Geoghegan",
     maintainer_email = "rory.geoghegan@ecometrica.com",
     url = "http://github.com/ecometrica/django-vinaigrette/",
