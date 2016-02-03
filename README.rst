@@ -99,3 +99,10 @@ Release Notes
 -----
 
 * Can specify properties to use instead of database field names in .register() function.
+
+1.0.0
+-----
+
+* Remove support for Django versions < 1.8
+* Added support for Django 1.9
+* Add the `--keep-vinaigrette-temp` option which keeps the temporary file containing the generated list of translations
