@@ -37,41 +37,28 @@ def _get_po_paths(locales=[]):
     return po_paths
 
 class Command(django_makemessages.Command):
+    help = ("Runs over the entire source tree of the current directory and "
+        "pulls out all strings marked for translation. It creates (or "
+        "updates) a message file in the conf/locale (in the django tree) or "
+        "locale (for project and application) directory. Also includes "
+        "strings from database fields handled by vinaigrette.")
 
-    # NOTE: I'm not sure if this "if" statement is the best way to support both 1.7 (optparse) and 1.8 (argparse).  Feel free to change it in the repo if you know a better way.
-    # options list
-    if django.VERSION <= (1, 7):  # for Django 1.7 and less
-      option_list = django_makemessages.Command.option_list + (
-          make_option('--no-vinaigrette', default=True, action='store_false', dest='avec-vinaigrette',
-              help="Don't include strings from database fields handled by vinaigrette."),
-          make_option('--keep-obsolete', default=False, action='store_true', dest='keep-obsolete',
-              help="Don't obsolete strings no longer referenced in code or Viniagrette's fields."),
-          make_option('--keep-vinaigrette-temp', default=False, action='store_true', dest='keep-vinaigrette-temp',
-              help="Keep the temporary vinaigrette-deleteme.py file."),
-      )
-    else: # for Django 1.8+
-      def add_arguments(self, parser):
-          super(Command, self).add_arguments(parser)
-          parser.add_argument('--no-vinaigrette', default=True, action='store_false', dest='avec-vinaigrette',
-              help="Don't include strings from database fields handled by vinaigrette."),
-          parser.add_argument('--keep-obsolete', default=False, action='store_true', dest='keep-obsolete',
-              help="Don't obsolete strings no longer referenced in code or Viniagrette's fields.")
-          parser.add_argument('--keep-vinaigrette-temp', default=False, action='store_true', dest='keep-vinaigrette-temp',
-              help="Keep the temporary vinaigrette-deleteme.py file.")
+    def add_arguments(self, parser):
+        super(Command, self).add_arguments(parser)
+        parser.add_argument('--no-vinaigrette', default=True, action='store_false', dest='avec-vinaigrette',
+            help="Don't include strings from database fields handled by vinaigrette."),
+        parser.add_argument('--keep-obsolete', default=False, action='store_true', dest='keep-obsolete',
+            help="Don't obsolete strings no longer referenced in code or Viniagrette's fields.")
+        parser.add_argument('--keep-vinaigrette-temp', default=False, action='store_true', dest='keep-vinaigrette-temp',
+            help="Keep the temporary vinaigrette-deleteme.py file.")
+   
+    requires_system_checks = True
 
-    help = "Runs over the entire source tree of the current directory and pulls out all strings marked for translation. It creates (or updates) a message file in the conf/locale (in the django tree) or locale (for project and application) directory. Also includes strings from database fields handled by vinaigrette."
-    
-    # requires_model_validation deprecated since Django 1.7, replaced by requires_system_checks
-    if django.VERSION < (1, 7):
-        requires_model_validation = True
-    else:
-        requires_system_checks = True
-    
     def handle(self, *args, **options):
         if not options.get('avec-vinaigrette'):
             return super(Command, self).handle(*args, **options)
 
-        verbosity = int(options['verbosity'])
+        verbosity = options.get('verbosity') or 0
         vinfilepath = 'vinaigrette-deleteme.py'
         sources = ['', '']
 
