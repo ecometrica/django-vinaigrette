@@ -51,7 +51,7 @@ class Command(django_makemessages.Command):
       )
     else: # for Django 1.8+
       def add_arguments(self, parser):
-          super().add_arguments(parser)
+          super(Command, self).add_arguments(parser)
           parser.add_argument('--no-vinaigrette', default=True, action='store_false', dest='avec-vinaigrette',
               help="Don't include strings from database fields handled by vinaigrette."),
           parser.add_argument('--keep-obsolete', default=False, action='store_true', dest='keep-obsolete',
@@ -71,7 +71,7 @@ class Command(django_makemessages.Command):
         if not options.get('avec-vinaigrette'):
             return super(Command, self).handle(*args, **options)
 
-        verbosity = int(options.get('verbosity'))
+        verbosity = int(options['verbosity'])
         vinfilepath = 'vinaigrette-deleteme.py'
         sources = ['', '']
 
