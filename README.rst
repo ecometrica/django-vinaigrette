@@ -106,3 +106,8 @@ Release Notes
 * Remove support for Django versions < 1.8
 * Added support for Django 1.9
 * Add the `--keep-vinaigrette-temp` option which keeps the temporary file containing the generated list of translations
+
+1.0.1
+-----
+
+* Remembered to update version properly
