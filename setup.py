@@ -1,26 +1,30 @@
-import os
+"""Translate Django model data using gettext"""
 from setuptools import setup, find_packages
 
-description = "Translate Django model data using gettext"
-cur_dir = os.path.dirname(__file__)
-try:
-    long_description = open(os.path.join(cur_dir, 'README.rst')).read()
-except:
-    long_description = description
+LONG_DESCRIPTION_FILES = ('README.rst', 'CHANGELOG.rst')
+
+
+def yield_long_description_files():
+    for description_file in LONG_DESCRIPTION_FILES:
+        with open(description_file, 'r', 'utf-8') as f:
+            yield f.read()
 
 setup(
     name = "django-vinaigrette",
     version = "1.1.1",
     packages = find_packages(),
-    description = description,
+    description=__doc__,
+    long_description='\n\n'.join(yield_long_description_files()),
     author = "Ecometrica Ltd",
     author_email = "dev@ecometrica.com",
     maintainer = "Ecometrica Ltd",
     maintainer_email = "software@ecometrica.com",
-    url = "http://github.com/ecometrica/django-vinaigrette/",
-    keywords = ["django", "translation", "gettext",
-        "internationalization", "i18n", "database", "model"],
-    classifiers = [
+    url = "https://github.com/ecometrica/django-vinaigrette/",
+    keywords=[
+        "django", "translation", "gettext",
+        "internationalization", "i18n", "database", "model"
+    ],
+    classifiers=[
         "Programming Language :: Python",
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
@@ -30,6 +34,8 @@ setup(
         "Operating System :: POSIX",
         "Topic :: Software Development :: Internationalization",
         "Framework :: Django",
-        ],
-    long_description = long_description,
+        "Framework :: Django :: 1.7",
+        "Framework :: Django :: 1.8",
+        "Framework :: Django :: 1.9",
+    ],
 )

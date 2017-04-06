@@ -1,0 +1,51 @@
+=============
+Release Notes
+=============
+
+1.1.1
+-----
+
+* Update contact info
+
+1.1.0
+-----
+
+* Django 2.0 support
+
+1.0.1
+-----
+
+* Remembered to update version properly
+
+1.0.0
+-----
+
+* Add the ``--keep-vinaigrette-temp`` option which keeps the temporary file containing the generated list of translations
+* Added support for Django 1.9
+* Remove support for Django versions < 1.8
+
+0.5.0
+-----
+
+* Can specify properties to use instead of database field names in .register() function.
+
+0.4.0
+-----
+
+* Support for Django 1.7
+
+0.3.0
+-----
+
+* Support for python 3.3.
+
+0.2.0
+-----
+
+* Bug fix for the --all option, it now works again.
+* New VinaigrettteAdminLanguageMiddleware middleware.
+
+0.1.3
+-----
+
+* Support for Django 1.6.
