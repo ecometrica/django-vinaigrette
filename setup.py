@@ -9,17 +9,18 @@ def yield_long_description_files():
         with open(description_file, 'r', 'utf-8') as f:
             yield f.read()
 
+
 setup(
-    name = "django-vinaigrette",
-    version = "1.1.1",
-    packages = find_packages(),
+    name="django-vinaigrette",
+    version="1.1.1",
+    packages=find_packages(),
     description=__doc__,
     long_description='\n\n'.join(yield_long_description_files()),
-    author = "Ecometrica Ltd",
-    author_email = "dev@ecometrica.com",
-    maintainer = "Ecometrica Ltd",
-    maintainer_email = "software@ecometrica.com",
-    url = "https://github.com/ecometrica/django-vinaigrette/",
+    author="Ecometrica Ltd",
+    author_email="dev@ecometrica.com",
+    maintainer="Ecometrica Ltd",
+    maintainer_email="software@ecometrica.com",
+    url="https://github.com/ecometrica/django-vinaigrette/",
     keywords=[
         "django", "translation", "gettext",
         "internationalization", "i18n", "database", "model"

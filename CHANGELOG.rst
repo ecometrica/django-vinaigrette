@@ -2,6 +2,20 @@
 Release Notes
 =============
 
+Upcoming
+--------
+
+* Update middleware to the 1.10+ style
+
+  * Maintains backwards-compat with 1.9 and below
+
+    * Will now work in either ``MIDDLEWARE_CLASSES`` or ``MIDDLEWARE``
+
+  * Deprecates ``VinaigrettteAdminLanguageMiddleware`` for ``VinaigretteAdminLanguageMiddleware``
+
+    * Users should change to ``vinaigrette.middleware.VinaigretteAdminLanguageMiddleware``
+    * ``vinaigrette.VinaigrettteAdminLanguageMiddleware`` will continue to work until next major version
+
 1.1.1
 -----
 

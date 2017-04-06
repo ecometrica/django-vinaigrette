@@ -1,12 +1,12 @@
 # Copyright (c) Ecometrica. All rights reserved.
 # Distributed under the BSD license. See LICENSE for details.
-
 import re
 
 from django.db.models.signals import pre_save, post_save
-from django.conf import settings
-from django.urls import reverse
-from django.utils.translation import ugettext, ugettext_lazy, activate, get_language
+from django.utils.translation import ugettext
+
+# TODO: Deprecated. Remove in next major version
+from .middleware import VinaigretteAdminLanguageMiddleware as VinaigrettteAdminLanguageMiddleware
 
 VERSION = "1.1.1"
 
@@ -76,25 +76,3 @@ class VinaigretteDescriptor(object):
 
     def __set__(self, obj, value):
         obj.__dict__[self.name] = value
-
-
-class VinaigrettteAdminLanguageMiddleware(object):
-    """
-    Use this middleware to ensure the admin is always running under the
-    default language, to prevent vinaigrette from clobbering the registered
-    fields with the user's picked language in the change views. Aslo make
-    sure that this is after any LocaleMiddleware like classes.
-    """
-
-    def is_admin_request(self, request):
-        """
-        Returns True if this request is for the admin views.
-        """
-        return request.path.startswith(reverse('admin:index'))
-
-    def process_request(self, request):
-        if not self.is_admin_request(request):
-            return None
-
-        # We are in the admin site
-        activate(settings.LANGUAGE_CODE)
