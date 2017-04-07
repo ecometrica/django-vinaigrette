@@ -9,19 +9,22 @@ from django.utils.translation import ugettext
 from .middleware import VinaigretteAdminLanguageMiddleware as VinaigrettteAdminLanguageMiddleware
 
 VERSION = "1.1.1"
+DOUBLE_PERCENTAGE_RE = re.compile(u'%(?!\()')
+
+_REGISTRY = {}
+
 
 class VinaigretteError(Exception):
     pass
 
-_registry = {}
-
-DOUBLE_PERCENTAGE_RE = re.compile(u'%(?!\()')
 
 def _vinaigrette_pre_save(sender, instance, **kwargs):
     setattr(instance, '_vinaigrette_saving', True)
 
+
 def _vinaigrette_post_save(sender, instance, **kwargs):
     delattr(instance, '_vinaigrette_saving')
+
 
 def register(model, fields, restrict_to=None, manager=None, properties=None):
     """Tell vinaigrette which fields on a Django model should be translated.
@@ -40,8 +43,8 @@ def register(model, fields, restrict_to=None, manager=None, properties=None):
     objects on registered models.
     """
 
-    global _registry
-    _registry[model] = {
+    global _REGISTRY
+    _REGISTRY[model] = {
         'fields': fields,
         'restrict_to': restrict_to,
         'manager': manager,
@@ -54,6 +57,7 @@ def register(model, fields, restrict_to=None, manager=None, properties=None):
 
     pre_save.connect(_vinaigrette_pre_save, sender=model)
     post_save.connect(_vinaigrette_post_save, sender=model)
+
 
 class VinaigretteDescriptor(object):
 

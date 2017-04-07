@@ -67,12 +67,13 @@ class Command(django_makemessages.Command):
             vinfile.write('#coding:utf-8\n')
             if verbosity > 0:
                 self.stdout.write('Vinaigrette is processing database values...')
-            
-            for model in sorted(vinaigrette._registry.keys(), key=lambda m: m._meta.object_name):
+
+            models = sorted(vinaigrette._REGISTRY.keys(), key=lambda m: m._meta.object_name)
+            for model in models:
                 strings_seen = set()
                 modelname = "%s.%s" % (model._meta.app_label, model._meta.object_name)
-                reg = vinaigrette._registry[model]
-                fields = reg['fields'] # strings to be translated
+                reg = vinaigrette._REGISTRY[model]
+                fields = reg['fields']  # strings to be translated
                 properties = reg['properties']
                 # make query_fields a set to avoid duplicates
                 # only these fields will be retrieved from the db instead of all model's field
