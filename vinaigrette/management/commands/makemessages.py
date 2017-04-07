@@ -1,7 +1,7 @@
 # Copyright (c) Ecometrica. All rights reserved.
 # Distributed under the BSD license. See LICENSE for details.
 from __future__ import print_function
-import codecs
+import io
 import os
 import re
 
@@ -49,7 +49,7 @@ class Command(django_makemessages.Command):
             help="Don't obsolete strings no longer referenced in code or Viniagrette's fields.")
         parser.add_argument('--keep-vinaigrette-temp', default=False, action='store_true', dest='keep-vinaigrette-temp',
             help="Keep the temporary vinaigrette-deleteme.py file.")
-   
+
     requires_system_checks = True
 
     def handle(self, *args, **options):
@@ -62,8 +62,7 @@ class Command(django_makemessages.Command):
 
         # Because Django makemessages isn't very extensible, we're writing a
         # fake Python file, calling makemessages, then deleting it after.
-        vinfile = codecs.open(vinfilepath, 'w', encoding='utf8')
-        try:
+        with io.open(vinfilepath, 'w', encoding='utf8') as vinfile:
             vinfile.write('#coding:utf-8\n')
             if verbosity > 0:
                 self.stdout.write('Vinaigrette is processing database values...')
@@ -106,9 +105,6 @@ class Command(django_makemessages.Command):
                                 'gettext(%r)\n'
                                 % val.replace('\r', '').replace('%', '%%')
                             )
-
-        finally:
-            vinfile.close()
 
         try:
             super(Command, self).handle(*args, **options)
