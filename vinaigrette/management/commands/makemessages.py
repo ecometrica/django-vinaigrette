@@ -2,10 +2,8 @@
 # Distributed under the BSD license. See LICENSE for details.
 from __future__ import print_function
 import codecs
-from optparse import make_option
 import os
 import re
-import django
 
 import vinaigrette
 

@@ -5,7 +5,7 @@ import re
 
 from django.db.models.signals import pre_save, post_save
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.translation import ugettext, ugettext_lazy, activate, get_language
 
 VERSION = "1.0.1"
