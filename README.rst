@@ -111,3 +111,8 @@ Release Notes
 -----
 
 * Remembered to update version properly
+
+1.1.0
+-----
+
+* Django 2.0 support

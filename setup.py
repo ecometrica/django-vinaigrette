@@ -10,7 +10,7 @@ except:
 
 setup(
     name = "django-vinaigrette",
-    version = "1.0.1",
+    version = "1.1.0",
     packages = find_packages(),
     description = description,
     author = "Ecometrica",
