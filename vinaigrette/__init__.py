@@ -26,7 +26,7 @@ def _vinaigrette_post_save(sender, instance, **kwargs):
     delattr(instance, '_vinaigrette_saving')
 
 
-def register(model, fields, restrict_to=None, manager=None, properties=None):
+def register(model, fields, restrict_to=None, manager=None, properties=None, contexts=None):
     """Tell vinaigrette which fields on a Django model should be translated.
 
     Arguments:
@@ -43,17 +43,20 @@ def register(model, fields, restrict_to=None, manager=None, properties=None):
     strings. Gettext lookups will always be performed on relevant fields for all
     objects on registered models.
     """
+    if not contexts:
+        contexts = {}
 
     global _REGISTRY
     _REGISTRY[model] = {
         'fields': fields,
+        'contexts': contexts,
         'restrict_to': restrict_to,
         'manager': manager,
         'properties': properties,
     }
 
     for field in fields:
-        setattr(model, field, VinaigretteDescriptor(field))
+        setattr(model, field, VinaigretteDescriptor(field, contexts.get(field, None)))
     model.untranslated = lambda self, fieldname: self.__dict__[fieldname]
 
     pre_save.connect(_vinaigrette_pre_save, sender=model)
@@ -62,8 +65,9 @@ def register(model, fields, restrict_to=None, manager=None, properties=None):
 
 class VinaigretteDescriptor(object):
 
-    def __init__(self, name):
+    def __init__(self, name, context=None):
         self.name = name
+        self.context = context
 
     def __get__(self, obj, type=None):
         if obj:
@@ -77,6 +81,8 @@ class VinaigretteDescriptor(object):
 
         # We double over all the keys to mimic how {% trans %} works
         key = DOUBLE_PERCENTAGE_RE.sub(u'%%', key)
+        if self.context:
+            return pgettext(self.context, key).replace('%%', '%')
         return ugettext(key).replace('%%', '%')
 
     def __set__(self, obj, value):

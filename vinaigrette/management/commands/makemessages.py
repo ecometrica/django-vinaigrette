@@ -73,6 +73,7 @@ class Command(django_makemessages.Command):
                 modelname = "%s.%s" % (model._meta.app_label, model._meta.object_name)
                 reg = vinaigrette._REGISTRY[model]
                 fields = reg['fields']  # strings to be translated
+                contexts = reg['contexts']  # Dict of string contexts, if available
                 properties = reg['properties']
                 # make query_fields a set to avoid duplicates
                 # only these fields will be retrieved from the db instead of all model's field
@@ -98,13 +99,16 @@ class Command(django_makemessages.Command):
                         # In the reference comment in the po file, use the object's primary
                         # key as the line number, but only if it's an integer primary key
                         val = getattr(instance, field)
+
+                        context = contexts.get(field, None)
                         if val and val not in strings_seen:
                             strings_seen.add(val)
                             sources.append('%s/%s:%s' % (modelname, field, idnum))
-                            vinfile.write(
-                                'gettext(%r)\n'
-                                % val.replace('\r', '').replace('%', '%%')
-                            )
+                            if context:
+                                line = 'pgettext(%r, %r)\n' % (context, val.replace('\r', '').replace('%', '%%'))
+                            else:
+                                line = 'gettext(%r)\n' % val.replace('\r', '').replace('%', '%%')
+                            vinfile.write(line)
 
         try:
             super(Command, self).handle(*args, **options)
