@@ -126,7 +126,12 @@ class Command(django_makemessages.Command):
         # references to our fake python file for more descriptive
         # references.
         if options.get('all'):
-            po_paths = _get_po_paths()
+            if os.environ.get('DJANGO_SETTINGS_MODULE'):
+                from django.conf import settings
+                locales = [language[0] for language in settings.LANGUAGES]
+            else:
+                raise CommandError("This script should be run from the Django SVN tree or your project or app tree, or with the settings module specified.")
+            po_paths = _get_po_paths(locales)
         else:
             locales = options.get('locale')
 
