@@ -7,7 +7,7 @@ class VinaigretteAdminLanguageMiddleware(object):
     """
     Use this middleware to ensure the admin is always running under the
     default language, to prevent vinaigrette from clobbering the registered
-    fields with the user's picked language in the change views. Aslo make
+    fields with the user's picked language in the change views. Also make
     sure that this is after any LocaleMiddleware like classes.
     """
 
