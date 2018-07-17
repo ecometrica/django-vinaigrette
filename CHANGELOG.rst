@@ -16,6 +16,8 @@ Upcoming
     * Users should change to ``vinaigrette.middleware.VinaigretteAdminLanguageMiddleware``
     * ``vinaigrette.VinaigrettteAdminLanguageMiddleware`` will continue to work until next major version
 
+* Adds tox and pytest for development and testing
+
 1.1.1
 -----
 
