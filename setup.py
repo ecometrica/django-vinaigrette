@@ -1,4 +1,5 @@
 """Translate Django model data using gettext"""
+import io
 from setuptools import setup, find_packages
 
 LONG_DESCRIPTION_FILES = ('README.rst', 'CHANGELOG.rst')
@@ -6,7 +7,7 @@ LONG_DESCRIPTION_FILES = ('README.rst', 'CHANGELOG.rst')
 
 def yield_long_description_files():
     for description_file in LONG_DESCRIPTION_FILES:
-        with open(description_file, 'r', 'utf-8') as f:
+        with io.open(description_file, 'r', encoding='utf-8') as f:
             yield f.read()
 
 

@@ -69,5 +69,5 @@ Help! The Admin is messing up all the vinaigrette fields whenever I save changes
 ---------------------------------------------------------------------------------
 
 Add ``vinaigrette.middleware.VinaigretteAdminLanguageMiddleware`` to your
-``settings.Middleware`` to force the admin to always use the main language, and
+``settings.MIDDLEWARE`` to force the admin to always use the main language, and
 not have vinaigrette mess with your change views.
