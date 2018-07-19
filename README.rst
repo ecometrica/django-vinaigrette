@@ -71,3 +71,13 @@ Help! The Admin is messing up all the vinaigrette fields whenever I save changes
 Add ``vinaigrette.middleware.VinaigretteAdminLanguageMiddleware`` to your
 ``settings.MIDDLEWARE`` to force the admin to always use the main language, and
 not have vinaigrette mess with your change views.
+
+Contributing
+============
+
+Testing
+-------
+
+* Create a virtualenv for the project
+* Install ``tox``. When tox is run, it will create the test environments for
+  supported Django and Python versions and then run tests against them
