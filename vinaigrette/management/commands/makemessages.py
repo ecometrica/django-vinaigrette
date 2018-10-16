@@ -49,6 +49,8 @@ class Command(django_makemessages.Command):
             help="Don't obsolete strings no longer referenced in code or Viniagrette's fields.")
         parser.add_argument('--keep-vinaigrette-temp', default=False, action='store_true', dest='keep-vinaigrette-temp',
             help="Keep the temporary vinaigrette-deleteme.py file.")
+        parser.add_argument('--generate-js', default=False, action='store_true', dest='generate-js',
+                            help="Generate strings for the djangojs domain.")
 
     requires_system_checks = True
 
@@ -58,6 +60,8 @@ class Command(django_makemessages.Command):
 
         verbosity = int(options['verbosity'])
         vinfilepath = 'vinaigrette-deleteme.py'
+        if options.get('domain') == 'djangojs' and options.get('generate-js'):
+            vinfilepath = 'vinaigrette-deleteme.js'
         sources = ['', '']
 
         # Because Django makemessages isn't very extensible, we're writing a
