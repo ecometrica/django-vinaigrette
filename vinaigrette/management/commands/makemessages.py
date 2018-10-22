@@ -81,9 +81,9 @@ class Command(django_makemessages.Command):
                 # if there are properties, we update the needed query fields and
                 # update the string that will be translated
                 if properties:
-                   fields += properties.keys()
-                   for prop in properties.itervalues():
-                       query_fields.update(prop)
+                    fields += properties.keys()
+                    for prop in properties.itervalues():
+                        query_fields.update(prop)
 
                 manager = reg['manager'] if reg['manager'] else model._default_manager
                 qs = manager.filter(reg['restrict_to']) if reg['restrict_to'] else manager.all()
