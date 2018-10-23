@@ -8,12 +8,23 @@ and Django's standard internationalization features.
 Installing
 ==========
 
-Add ``vinaigrette`` to INSTALLED_APPS in your settings.
+Add ``vinaigrette`` to ``INSTALLED_APPS`` in your settings.
 
-Then, tell vinaigrette which fields you want to translate. In the appropriate ``models.py`` files::
+Then, tell vinaigrette which fields you want to translate. Because vinaigrette needs to register signals,
+you should register your model translations when models have finished loading, in the appropriate ``apps.py`` files
+(or wherever you keep your ``AppConfig`` subclasses)::
 
     import vinaigrette
-    vinaigrette.register(Ingredient, ['name', 'description'])
+
+    class SaladAppConfig(AppConfig):
+        def ready(self):
+            # Import the model requiring translation
+            from .models import Ingredient  # or...
+            Ingredient = self.get_model("Ingredient")
+
+            # Register fields to translate
+            vinaigrette.register(Ingredient, ['name', 'description'])
+
 
 This tells vinaigrette to translate the ``name`` and ``description`` fields on Ingredient objects.
 
