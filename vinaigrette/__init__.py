@@ -3,7 +3,7 @@
 import re
 
 from django.db.models.signals import pre_save, post_save
-from django.utils.translation import ugettext
+from django.utils.translation import ugettext, pgettext
 
 # TODO: Deprecated. Remove in next major version
 from .middleware import VinaigretteAdminLanguageMiddleware as VinaigrettteAdminLanguageMiddleware
@@ -82,8 +82,10 @@ class VinaigretteDescriptor(object):
         # We double over all the keys to mimic how {% trans %} works
         key = DOUBLE_PERCENTAGE_RE.sub(u'%%', key)
         if self.context:
-            return pgettext(self.context, key).replace('%%', '%')
-        return ugettext(key).replace('%%', '%')
+            text = pgettext(self.context, key)
+        else:
+            text = ugettext(key)
+        return text.replace('%%', '%')
 
     def __set__(self, obj, value):
         obj.__dict__[self.name] = value
