@@ -38,6 +38,9 @@ def register(model, fields, restrict_to=None, manager=None, properties=None, con
         when collecting translation strings.
     properties -- A dictionary of "read only" properties that are composed by more that one field
                   e.g. {'full_name': ['first_name', 'last_name']}
+    contexts -- A dictionary including any (pgettext) context that may need
+                to be applied to each field.
+                e.g. {'name': 'db category name', 'description': 'db detailed category description'}
 
     Note that both restrict_to and manager are only used when collecting translation
     strings. Gettext lookups will always be performed on relevant fields for all
