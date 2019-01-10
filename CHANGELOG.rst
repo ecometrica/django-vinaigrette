@@ -2,8 +2,11 @@
 Release Notes
 =============
 
-Upcoming
+1.2.0
 --------
+
+* Added an optional contexts parameter for the register function, for
+  providing translation context for model fields.
 
 * Update middleware to the 1.10+ style
 
