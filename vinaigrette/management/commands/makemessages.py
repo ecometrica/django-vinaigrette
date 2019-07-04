@@ -63,7 +63,7 @@ class Command(django_makemessages.Command):
         # Because Django makemessages isn't very extensible, we're writing a
         # fake Python file, calling makemessages, then deleting it after.
         with io.open(vinfilepath, 'w', encoding='utf8') as vinfile:
-            vinfile.write('#coding:utf-8\n')
+            vinfile.write(u'#coding:utf-8\n')
             if verbosity > 0:
                 self.stdout.write('Vinaigrette is processing database values...')
 
@@ -105,9 +105,9 @@ class Command(django_makemessages.Command):
                             strings_seen.add(val)
                             sources.append('%s/%s:%s' % (modelname, field, idnum))
                             if context:
-                                line = 'pgettext(%r, %r)\n' % (context, val.replace('\r', '').replace('%', '%%'))
+                                line = u'pgettext(%r, %r)\n' % (context, val.replace('\r', '').replace('%', '%%'))
                             else:
-                                line = 'gettext(%r)\n' % val.replace('\r', '').replace('%', '%%')
+                                line = u'gettext(%r)\n' % val.replace('\r', '').replace('%', '%%')
                             vinfile.write(line)
 
         try:
