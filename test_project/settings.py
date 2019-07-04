@@ -1,3 +1,5 @@
+#encoding: utf-8
+
 SECRET_KEY = "thisisasecretkeyfortests.itisverysecure"
 
 INSTALLED_APPS = (
