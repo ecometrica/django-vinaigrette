@@ -10,6 +10,8 @@ INSTALLED_APPS = (
     'django.contrib.admin',
 
     'vinaigrette',
+
+    'test_project.dressings',
 )
 
 USE_I18N = True
