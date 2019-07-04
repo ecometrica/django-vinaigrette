@@ -2,6 +2,14 @@
 Release Notes
 =============
 
+1.2.1
+-----
+
+* Fix Python 2 support for makemessages
+
+  * Add a test for makemessages
+
+
 1.2.0
 --------
 
