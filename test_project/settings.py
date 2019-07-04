@@ -19,6 +19,9 @@ LANGUAGES = (
     ('en', u'English'),
     ('fr', u'Français'),
 )
+LOCALE_PATHS = (
+    'locale',
+)
 
 LANGUAGE_CODE = 'en'
 ROOT_URLCONF = 'test_project.urls'
