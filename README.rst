@@ -1,5 +1,5 @@
-.. image:: https://travis-ci.org/ecometrica/django-vinaigrette.svg?branch=master
-    :target: https://travis-ci.org/ecometrica/django-vinaigrette?branch=master
+.. image:: https://travis-ci.com/ecometrica/django-vinaigrette.svg?branch=master
+    :target: https://travis-ci.com/ecometrica/django-vinaigrette?branch=master
 .. image:: https://coveralls.io/repos/github/ecometrica/django-vinaigrette/badge.svg?branch=master
     :target: https://coveralls.io/github/ecometrica/django-vinaigrette?branch=master
 
