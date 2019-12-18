@@ -98,7 +98,10 @@ class Command(django_makemessages.Command):
                     for field in fields:
                         # In the reference comment in the po file, use the object's primary
                         # key as the line number, but only if it's an integer primary key
-                        val = getattr(instance, field)
+
+                        # Do not try to translate an already translated string
+                        # but its untranslated version.
+                        val = instance.untranslated(field)
 
                         context = contexts.get(field, None)
                         if val and val not in strings_seen:
