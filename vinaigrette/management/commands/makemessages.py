@@ -1,6 +1,7 @@
 # Copyright (c) Ecometrica. All rights reserved.
 # Distributed under the BSD license. See LICENSE for details.
 from __future__ import print_function
+import glob
 import io
 import os
 import re
@@ -23,6 +24,14 @@ def _get_po_paths(locales=[]):
 
     if not basedirs:
         raise CommandError("This script should be run from the Django SVN tree or your project or app tree, or with the settings module specified.")
+
+    if not locales:
+        looks_like_locale = re.compile(r'[a-z]{2}')
+        locale_dirs = filter(os.path.isdir, glob.glob('%s/*' % list(basedirs)[0]))
+        locales = [
+            lang_code for lang_code in map(os.path.basename, locale_dirs)
+            if looks_like_locale.match(lang_code)
+        ]
 
     po_paths = []
     for basedir in basedirs:
