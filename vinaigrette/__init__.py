@@ -3,7 +3,7 @@
 import re
 
 from django.db.models.signals import pre_save, post_save
-from django.utils.translation import ugettext, pgettext
+from django.utils.translation import gettext, pgettext
 
 # TODO: Deprecated. Remove in next major version
 from .middleware import VinaigretteAdminLanguageMiddleware as VinaigrettteAdminLanguageMiddleware
@@ -87,7 +87,7 @@ class VinaigretteDescriptor(object):
         if self.context:
             text = pgettext(self.context, key)
         else:
-            text = ugettext(key)
+            text = gettext(key)
         return text.replace('%%', '%')
 
     def __set__(self, obj, value):
