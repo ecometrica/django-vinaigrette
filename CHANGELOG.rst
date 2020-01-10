@@ -1,6 +1,10 @@
 Release Notes
 =============
 
+2.0.1
+-----
+* Rebuild for PyPI
+
 2.0.0
 -----
 * Remove Python 2 support
