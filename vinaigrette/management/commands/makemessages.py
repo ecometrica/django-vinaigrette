@@ -175,34 +175,32 @@ class Command(django_makemessages.Command):
             ]
 
         for po_path in po_paths:
-            po_file = open(po_path)
-            new_contents = []
-            lastline = ''
-            for line in po_file:
-                if line.startswith('#: '):
-                    new_contents.append(r_lineref.sub(lineref_replace, line))
-                else:
-                    if (line.startswith('#, python-format')
-                      and lastline.startswith('#: ')
-                      and vinfilepath in lastline):
-                        # A database string got labelled as being python-format;
-                        # it shouldn't be. Skip the line.
-                        continue
-                    if options.get('keep-obsolete'):
-                        if line in obsolete_warning:
-                            # Don't preserve old obsolete warnings we inserted
+            with open(po_path) as po_file:
+                new_contents = []
+                lastline = ''
+                for line in po_file:
+                    if line.startswith('#: '):
+                        new_contents.append(r_lineref.sub(lineref_replace, line))
+                    else:
+                        if (line.startswith('#, python-format')
+                                and lastline.startswith('#: ')
+                                and vinfilepath in lastline):
+                            # A database string got labelled as being python-format;
+                            # it shouldn't be. Skip the line.
                             continue
-                        if line.startswith('#~ msgid '):
-                            new_contents.extend(obsolete_warning)
-                        if line.startswith('#~ '):
-                            line = re.sub(r'^#~ ', '', line)
+                        if options.get('keep-obsolete'):
+                            if line in obsolete_warning:
+                                # Don't preserve old obsolete warnings we inserted
+                                continue
+                            if line.startswith('#~ msgid '):
+                                new_contents.extend(obsolete_warning)
+                            if line.startswith('#~ '):
+                                line = re.sub(r'^#~ ', '', line)
 
-                    new_contents.append(line)
-                lastline = line
-            po_file.close()
+                        new_contents.append(line)
+                    lastline = line
 
             # Perhaps this should be done a little more atomically w/ renames?
-            po_file = open(po_path, 'w')
-            for line in new_contents:
-                po_file.write(line)
-            po_file.close()
+            with open(po_path, 'w') as po_file:
+                for line in new_contents:
+                    po_file.write(line)
