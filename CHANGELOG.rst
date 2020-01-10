@@ -1,6 +1,15 @@
 Release Notes
 =============
 
+2.0.0
+-----
+* Remove Python 2 support
+* Allow running makemessages without specifying a locale (runs on all
+  locales)
+* Address Django upgrade warnings
+* Ensure that makemessages works when a non-English locale is active
+  during its execution
+
 1.2.1
 -----
 

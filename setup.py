@@ -13,7 +13,7 @@ def yield_long_description_files():
 
 setup(
     name="django-vinaigrette",
-    version="1.2.1",
+    version="2.0.0",
     packages=find_packages(),
     description=__doc__,
     long_description='\n\n'.join(yield_long_description_files()),
