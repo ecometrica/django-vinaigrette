@@ -8,7 +8,7 @@ import re
 
 import vinaigrette
 
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import CommandError
 from django.core.management.commands import makemessages as django_makemessages
 from django.utils.translation import ugettext
 
@@ -23,7 +23,8 @@ def _get_po_paths(locales=[]):
     basedirs = set(map(os.path.abspath, filter(os.path.isdir, basedirs)))
 
     if not basedirs:
-        raise CommandError("This script should be run from the Django SVN tree or your project or app tree, or with the settings module specified.")
+        raise CommandError("This script should be run from the Django SVN tree or your project "
+                           "or app tree, or with the settings module specified.")
 
     if not locales:
         looks_like_locale = re.compile(r'[a-z]{2}')
@@ -43,21 +44,30 @@ def _get_po_paths(locales=[]):
                         po_paths.append(os.path.join(dirpath, f))
     return po_paths
 
+
 class Command(django_makemessages.Command):
-    help = ("Runs over the entire source tree of the current directory and "
+    help = (
+        "Runs over the entire source tree of the current directory and "
         "pulls out all strings marked for translation. It creates (or "
         "updates) a message file in the conf/locale (in the django tree) or "
         "locale (for project and application) directory. Also includes "
-        "strings from database fields handled by vinaigrette.")
+        "strings from database fields handled by vinaigrette."
+    )
 
     def add_arguments(self, parser):
         super(Command, self).add_arguments(parser)
-        parser.add_argument('--no-vinaigrette', default=True, action='store_false', dest='avec-vinaigrette',
-            help="Don't include strings from database fields handled by vinaigrette."),
-        parser.add_argument('--keep-obsolete', default=False, action='store_true', dest='keep-obsolete',
-            help="Don't obsolete strings no longer referenced in code or Viniagrette's fields.")
-        parser.add_argument('--keep-vinaigrette-temp', default=False, action='store_true', dest='keep-vinaigrette-temp',
-            help="Keep the temporary vinaigrette-deleteme.py file.")
+        parser.add_argument(
+            '--no-vinaigrette', default=True, action='store_false', dest='avec-vinaigrette',
+            help="Don't include strings from database fields handled by vinaigrette."
+        )
+        parser.add_argument(
+            '--keep-obsolete', default=False, action='store_true', dest='keep-obsolete',
+            help="Don't obsolete strings no longer referenced in code or Viniagrette's fields."
+        )
+        parser.add_argument(
+            '--keep-vinaigrette-temp', default=False, action='store_true', dest='keep-vinaigrette-temp',
+            help="Keep the temporary vinaigrette-deleteme.py file."
+        )
 
     requires_system_checks = True
 
@@ -129,6 +139,7 @@ class Command(django_makemessages.Command):
                 os.unlink(vinfilepath)
 
         r_lineref = re.compile(r'%s:(\d+)' % re.escape(vinfilepath))
+
         def lineref_replace(match):
             try:
                 return sources[int(match.group(1))]
