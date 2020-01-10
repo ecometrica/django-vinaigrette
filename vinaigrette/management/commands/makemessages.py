@@ -10,7 +10,8 @@ import vinaigrette
 
 from django.core.management.base import CommandError
 from django.core.management.commands import makemessages as django_makemessages
-from django.utils.translation import ugettext
+from django.utils.translation import gettext
+
 
 def _get_po_paths(locales=[]):
     """Returns paths to all relevant po files in the current project."""
@@ -166,9 +167,12 @@ class Command(django_makemessages.Command):
             po_paths = _get_po_paths(locales)
 
         if options.get('keep-obsolete'):
-            obsolete_warning = ['#. %s\n' %
-                ugettext('Obsolete translation kept alive with Viniagrette').encode('utf8'),
-                '#: obsolete:0\n']
+            obsolete_warning = [
+                '#. {}\n'.format(
+                    gettext('Obsolete translation kept alive with Viniagrette')
+                ),
+                '#: obsolete:0\n',
+            ]
 
         for po_path in po_paths:
             po_file = open(po_path)
