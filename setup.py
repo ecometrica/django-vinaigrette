@@ -14,7 +14,7 @@ def yield_long_description_files():
 setup(
     name="django-vinaigrette",
     version="2.0.1",
-    packages=find_packages(),
+    packages=find_packages(exclude=["test_project*", "*.tests"]),
     description=__doc__,
     long_description='\n\n'.join(yield_long_description_files()),
     author="Ecometrica Ltd",
