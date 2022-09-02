@@ -65,7 +65,7 @@ class TestVinaigretteMakemessages(TestCase):
         translation.trans_real.gettext_module._translations.clear()
         translation.trans_real._translations.clear()
         translation._trans._translations.clear()
-        translation._trans.catalog()._catalog.clear()
+        translation._trans.catalog()._catalog._catalogs.clear()
         translation.activate('en')
 
         # makemessages with translations being active
