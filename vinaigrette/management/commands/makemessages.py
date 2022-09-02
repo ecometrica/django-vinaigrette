@@ -8,7 +8,7 @@ import re
 
 import vinaigrette
 
-from django.core.management.base import CommandError
+from django.core.management.base import ALL_CHECKS, CommandError
 from django.core.management.commands import makemessages as django_makemessages
 from django.utils.translation import gettext
 
@@ -70,7 +70,7 @@ class Command(django_makemessages.Command):
             help="Keep the temporary vinaigrette-deleteme.py file."
         )
 
-    requires_system_checks = True
+    requires_system_checks = ALL_CHECKS
 
     def handle(self, *args, **options):
         if not options.get('avec-vinaigrette'):
