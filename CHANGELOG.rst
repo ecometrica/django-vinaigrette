@@ -1,5 +1,12 @@
 Release Notes
 =============
+3.0.1
+-----
+* Rebuild for PyPI
+
+3.0.0
+-----
+* Support for Django > 4.1
 
 2.0.1
 -----
